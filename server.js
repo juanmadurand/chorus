@@ -5,22 +5,41 @@ var express = require('express'),
 	socketio = require('socket.io')(http),
 	path = require('path'),
 	exphbs = require('express-handlebars');
-var favicon = require('serve-favicon');
+var favicon = require('serve-favicon'),
+config = require('./config'),
+session = require('express-session'),
+bodyParser = require('body-parser');
 
 
 // some environment variables
 app.set('port', process.env.PORT || 3000);
 app.set('views', __dirname + '/views');
+app.set('config', config);
 app.use(express.static(path.join(__dirname, 'public')));
 
 // Set handlebars as the templating engine
 app.engine('handlebars', exphbs({ defaultLayout: 'main'}));
 app.set('view engine', 'handlebars');
 app.use(favicon(path.join(__dirname,'public','images','icons','favicon.ico')));
+app.use(bodyParser.json()); // Request POST params (json encoded)
+app.use(bodyParser.urlencoded({ extended: true })); // Request POST params
+require('./app/middlewares/errorhandler')(app);
+
+// Session
+app.use(session({
+	secret: config.session.secret,
+	cookie: {
+		httpOnly: true,
+		secure: true
+	},
+	duration: 30 * 60 * 1000,
+	saveUninitialized: true,
+	resave: true
+}));
 
 // Database
 var mongoose = require('mongoose');
-mongoose.connect('mongodb://localhost/mydb');
+mongoose.connect(config.db.host);
 var redis = require("redis");
 var dbClient = redis.createClient();
 
