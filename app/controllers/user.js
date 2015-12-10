@@ -8,7 +8,9 @@ module.exports = function(context) {
 	// List all users
 	router.get('/all', function(req, res, next){
 		User.find({}, function(err, users){
-			if (err) return next(err);
+			if (err){
+				return next(err);
+			}
 
 			res.json(users);
 		});
@@ -16,7 +18,7 @@ module.exports = function(context) {
 
 	router.get('/:username', function(req, res) {
 		User.findOne({username: req.params.username}, function (err, user) {
-			res.json(user)
+			res.json(user);
 		});
 	});
 
@@ -25,11 +27,14 @@ module.exports = function(context) {
 			name: req.body.name,
 			username: req.body.username,
 			password: req.body.password,
-			admin: true
+			age: req.body.age,
+			admin: false
 		});
 
 		newUser.save(function(err) {
-			if (err) return next(err);
+			if (err){
+				return next(err);
+			}
 
 			console.log('User created!');
 			res.json({
@@ -39,5 +44,5 @@ module.exports = function(context) {
 		});
 	});
 
-	return router
+	return router;
 }

@@ -30,11 +30,10 @@ app.use(session({
 	secret: config.session.secret,
 	cookie: {
 		httpOnly: true,
-		secure: true
+		secure: false
 	},
-	duration: 30 * 60 * 1000,
 	saveUninitialized: true,
-	resave: true
+	resave: false
 }));
 
 // Database
